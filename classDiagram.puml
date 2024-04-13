@@ -1,0 +1,61 @@
+@startuml
+skin rose
+
+package Src {
+    package Controllers {
+        class BaseApiController
+
+        class StudentController {
+            - _studentRepository: IStudentRepository
+            + StudentController(studentRepository: IStudentRepository)
+            +CreateStudent(student: Student): Task<IResult>
+            +GetStudents(): Task<IResult>
+            +GetStudentById(id: int): Task<IResult>
+            +UpdateStudent(id: int, student: Student): Task<IResult>
+            +DeleteStudent(id: int): Task<IResult>
+        }
+    }
+
+    package Data {
+        class DataContext {
+            +DataContext(options: DbContextOptions<DataContext>)
+            +Students: DbSet<Student>
+        }
+
+        class StudentRepository {
+            -_context: DataContext
+            +StudentRepository(context: DataContext)
+        }
+    }
+
+    package Models {
+        class Student {
+            +Id: int
+            +Rut: string
+            +Name: string
+            +Email: string
+        }
+    }
+
+    package Interfaces {
+        interface IStudentRepository {
+            +SaveChangesAsync(): Task<bool>
+            +AddStudentAsync(student: Student): Task
+            +GetStudentByIdAsync(id: int): Task<Student?>
+            +GetStudentByRutAsync(rut: string): Task<Student?>
+            +GetStudentsAsync(): Task<IEnumerable<Student>>
+            +UpdateStudentByIdAsync(id: int, updateStudent: Student): Task<bool>
+            +DeleteStudentByIdAsync(id: int): Task<bool>
+        }
+    }
+}
+
+StudentController -up-|> BaseApiController: <<extends>>
+StudentController *-left-> "1" IStudentRepository: has
+StudentRepository .up.|> IStudentRepository: <<implements>>
+
+DataContext *--> "*" Student: has
+StudentRepository *--> "1" DataContext: has
+StudentRepository --> Student: <<uses>>
+StudentController --> Student: <<uses>>
+@enduml

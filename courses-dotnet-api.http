@@ -1,0 +1,6 @@
+@courses_dotnet_api_HostAddress = http://localhost:5198
+
+GET {{courses_dotnet_api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
